@@ -56,10 +56,14 @@ spec:
               containerPort: 6379
               protocol: TCP
           readinessProbe:
-            tcpSocket:
-              port: 6379
             initialDelaySeconds: 1
-            timeoutSeconds: 1
+            timeoutSeconds: 2
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - response=$(timeout 1 redis-cli ping);
+                if [ "$response" != "PONG" ]; then echo "$response"; exit 1; fi
           livenessProbe:
             tcpSocket:
               port: 6379
